@@ -4,7 +4,7 @@
     font-family: sans-serif;
     margin: 0;
     box-sizing: border-box;
-    height: 500px;
+    height: 100%;
   }
 
   /* Initial export view */
@@ -45,17 +45,31 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.2s ease;
   }
 
   button:hover {
-    background: #5c46ea;
+    background: #400cbf;
+  }
+
+  /* Active state for better feedback */
+  button:active {
+    transform: scale(0.98);
   }
 
   #copy-css {
     position: absolute;
     top: 15px;
-    right: 27px;
+    right: 15px;
     z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Success state for copy button */
+  #copy-css.success {
+    background: #1bc47d;
   }
 
   h3 {
@@ -81,7 +95,9 @@
   <h3>CSS Preview</h3>
   <p>Copy and paste the following code into your CSS file.</p>
   <div id="cssContainer">
-    <button id="copy-css">Copy CSS</button>
+    <button id="copy-css">
+      <span id="copy-text">Copy CSS</span>
+    </button>
     <pre id="cssContent"></pre>
   </div>
 </div>
@@ -101,14 +117,43 @@
   };
 
   document.getElementById("copy-css").onclick = () => {
+    const copyButton = document.getElementById("copy-css");
+    const copyText = document.getElementById("copy-text");
     const cssContent = document.getElementById("cssContent").textContent;
-    navigator.clipboard
-      .writeText(cssContent)
-      .then(() => {
-        alert("CSS copied to clipboard!");
-      })
-      .catch((err) => {
-        console.error("Failed to copy text: ", err);
-      });
+
+    try {
+      // Create a temporary textarea element
+      const textarea = document.createElement("textarea");
+      textarea.value = cssContent;
+      textarea.style.position = "fixed"; // Prevent scrolling to bottom
+      document.body.appendChild(textarea);
+      textarea.select();
+
+      // Execute copy command
+      const successful = document.execCommand("copy");
+      document.body.removeChild(textarea);
+
+      if (successful) {
+        // Visual feedback
+        copyButton.classList.add("success");
+        copyText.textContent = "Copied!";
+
+        // Reset after 2 seconds
+        setTimeout(() => {
+          copyButton.classList.remove("success");
+          copyText.textContent = "Copy CSS";
+        }, 2000);
+      } else {
+        throw new Error("Copy command failed");
+      }
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+      copyText.textContent = "Failed to copy";
+
+      // Reset after 2 seconds
+      setTimeout(() => {
+        copyText.textContent = "Copy CSS";
+      }, 2000);
+    }
   };
 </script>

@@ -7,7 +7,7 @@
 // full browser environment (See https://www.figma.com/plugin-docs/how-plugins-run).
 
 // Initial UI setup with fixed dimensions
-figma.showUI(__html__, { width: 300, height: 500, themeColors: true });
+figma.showUI(__html__, { width: 300, height: 200, themeColors: true });
 
 figma.ui.onmessage = async (msg: { type: string }) => {
   if (msg.type === "export-to-css") {
