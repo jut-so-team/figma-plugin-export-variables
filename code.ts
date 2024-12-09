@@ -6,8 +6,8 @@
 // You can access browser APIs in the <script> tag inside "ui.html" which has a
 // full browser environment (See https://www.figma.com/plugin-docs/how-plugins-run).
 
-// Initial UI setup
-figma.showUI(__html__, { width: 300, height: 200 });
+// Initial UI setup with fixed dimensions
+figma.showUI(__html__, { width: 300, height: 500, themeColors: true });
 
 figma.ui.onmessage = async (msg: { type: string }) => {
   if (msg.type === "export-to-css") {
@@ -34,8 +34,8 @@ figma.ui.onmessage = async (msg: { type: string }) => {
 
       const css = (await Promise.all(cssPromises)).join("\n\n");
 
-      // Send CSS to UI
-      figma.ui.resize(600, 400); // Resize window for better visibility
+      // Resize window for preview and send CSS
+      figma.ui.resize(600, 500);
       figma.ui.postMessage({ type: "css-exported", css });
     } catch (error) {
       console.error("Error exporting to CSS:", error);
