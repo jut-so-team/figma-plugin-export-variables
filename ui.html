@@ -1,17 +1,79 @@
-<h2>Rectangle Creator</h2>
-<p>Count: <input id="count" type="number" value="5"></p>
-<button id="create">Create</button>
-<button id="cancel">Cancel</button>
+<style>
+  body {
+    padding: 20px;
+    font-family: sans-serif;
+  }
+
+  /* Initial export view */
+  #export-view {
+    text-align: center;
+  }
+
+  /* Preview view */
+  #preview-view {
+    display: none;
+  }
+
+  #cssContent {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 10px 0;
+    max-height: calc(100vh - 120px);
+    overflow: auto;
+  }
+
+  button {
+    padding: 8px 16px;
+    margin-bottom: 10px;
+    background: #18a0fb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #0d8de3;
+  }
+</style>
+
+<!-- Initial export view -->
+<div id="export-view">
+  <h1>Export Variables Plugin</h1>
+  <button id="export-to-css">Export to CSS</button>
+</div>
+
+<!-- Preview view -->
+<div id="preview-view">
+  <button id="copy-css">Copy CSS</button>
+  <pre id="cssContent"></pre>
+</div>
+
 <script>
+  document.getElementById("export-to-css").onclick = () => {
+    parent.postMessage({ pluginMessage: { type: "export-to-css" } }, "*");
+  };
 
-document.getElementById('create').onclick = () => {
-  const textbox = document.getElementById('count');
-  const count = parseInt(textbox.value, 10);
-  parent.postMessage({ pluginMessage: { type: 'create-shapes', count } }, '*')
-}
+  window.onmessage = (event) => {
+    const message = event.data.pluginMessage;
+    if (message.type === "css-exported") {
+      // Show preview view and hide export view
+      document.getElementById("export-view").style.display = "none";
+      document.getElementById("preview-view").style.display = "block";
+      document.getElementById("cssContent").textContent = message.css;
+    }
+  };
 
-document.getElementById('cancel').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
-}
-
+  document.getElementById("copy-css").onclick = () => {
+    const cssContent = document.getElementById("cssContent").textContent;
+    navigator.clipboard
+      .writeText(cssContent)
+      .then(() => {
+        alert("CSS copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy text: ", err);
+      });
+  };
 </script>
